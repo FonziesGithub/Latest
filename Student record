@@ -1,0 +1,127 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class Student {
+private:
+    int id;
+    string name;
+    float grade;
+
+public:
+    void input() {
+        cout << "Enter student ID: ";
+        cin >> id;
+        cout << "Enter name: ";
+        cin.ignore();
+        getline(cin, name);
+        cout << "Enter grade: ";
+        cin >> grade;
+    }
+
+    void display() const {
+        cout << "ID: " << id << ", Name: " << name << ", Grade: " << grade << endl;
+    }
+
+    int getID() const {
+        return id;
+    }
+};
+
+class StudentSystem {
+private:
+    static const int MAX_STUDENTS = 100;
+    Student students[MAX_STUDENTS];
+    int count;
+
+    void sortByID() {
+        for (int i = 0; i < count - 1; i++) {
+            for (int j = 0; j < count - i - 1; j++) {
+                if (students[j].getID() > students[j + 1].getID()) {
+                    Student temp = students[j];
+                    students[j] = students[j + 1];
+                    students[j + 1] = temp;
+                }
+            }
+        }
+    }
+
+    int linearSearch(int id) const {
+        for (int i = 0; i < count; i++) {
+            if (students[i].getID() == id)
+                return i;
+        }
+        return -1;
+    }
+
+    int binarySearch(int id) const {
+        int left = 0, right = count - 1;
+        while (left <= right) {
+            int mid = (left + right) / 2;
+            if (students[mid].getID() == id)
+                return mid;
+            else if (students[mid].getID() < id)
+                left = mid + 1;
+            else
+                right = mid - 1;
+        }
+        return -1;
+    }
+
+public:
+    StudentSystem() {
+        count = 0;
+    }
+
+    void inputRecords() {
+        cout << "Enter number of students: ";
+        cin >> count;
+
+        if (count <= 0 || count > MAX_STUDENTS) {
+            cout << "Invalid number of students.\n";
+            count = 0;
+            return;
+        }
+
+        for (int i = 0; i < count; i++) {
+            cout << "\nStudent " << i + 1 << ":\n";
+            students[i].input();
+        }
+    }
+
+    void searchStudent() {
+        int method, id;
+        cout << "\nSearch Method:\n1. Linear Search (Unsorted)\n2. Binary Search (Sorted)\nEnter choice: ";
+        cin >> method;
+
+        cout << "Enter student ID to search: ";
+        cin >> id;
+
+        int index = -1;
+
+        if (method == 1) {
+            index = linearSearch(id);
+        } else if (method == 2) {
+            sortByID();
+            index = binarySearch(id);
+        } else {
+            cout << "Invalid search method.\n";
+            return;
+        }
+
+        if (index != -1) {
+            cout << "Student found:\n";
+            students[index].display();
+        } else {
+            cout << "Student with ID " << id << " not found.\n";
+        }
+    }
+};
+
+int main() {
+    StudentSystem system;
+    system.inputRecords();
+    system.searchStudent();
+    return 0;
+}
