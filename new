@@ -1,0 +1,149 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+const int MAX_STUDENTS = 100;
+
+void addRecord(int ids[], string names[], float grades[], int& count) {
+    if (count >= MAX_STUDENTS) {
+        cout << "Student list is full.\n";
+        return;
+    }
+
+    cout << "\n--- Add Student Record ---\n";
+    cout << "Enter student ID: ";
+    cin >> ids[count];
+    cout << "Enter name: ";
+    cin.ignore();
+    getline(cin, names[count]);
+    cout << "Enter grade: ";
+    cin >> grades[count];
+
+    count++;
+}
+
+int linearSearch(const int ids[], int count, int targetID) {
+    for (int i = 0; i < count; i++) {
+        if (ids[i] == targetID)
+            return i;
+    }
+    return -1;
+}
+
+void sortByID(int ids[], string names[], float grades[], int count) {
+    for (int i = 0; i < count - 1; i++) {
+        for (int j = 0; j < count - i - 1; j++) {
+            if (ids[j] > ids[j + 1]) {
+                swap(ids[j], ids[j + 1]);
+                swap(names[j], names[j + 1]);
+                swap(grades[j], grades[j + 1]);
+            }
+        }
+    }
+}
+
+int binarySearch(const int ids[], int count, int targetID) {
+    int left = 0, right = count - 1;
+    while (left <= right) {
+        int mid = (left + right) / 2;
+        if (ids[mid] == targetID)
+            return mid;
+        else if (ids[mid] < targetID)
+            left = mid + 1;
+        else
+            right = mid - 1;
+    }
+    return -1;
+}
+
+void displayRecord(int id, const string& name, float grade) {
+    cout << "ID: " << id << ", Name: " << name << ", Grade: " << grade << endl;
+}
+
+void displayAll(const int ids[], const string names[], const float grades[], int count) {
+    if (count == 0) {
+        cout << "No student records to display.\n";
+        return;
+    }
+
+    cout << "\n--- All Student Records ---\n";
+    for (int i = 0; i < count; i++) {
+        displayRecord(ids[i], names[i], grades[i]);
+    }
+}
+
+int main() {
+    int ids[MAX_STUDENTS];
+    string names[MAX_STUDENTS];
+    float grades[MAX_STUDENTS];
+    int count = 0;
+    char choice;
+
+    do {
+        cout << "\n===== Student Record Menu =====\n";
+        cout << "A. Add Record\n";
+        cout << "B. Sequential Search\n";
+        cout << "C. Binary Search\n";
+        cout << "D. Display All Records\n";
+        cout << "E. Exit\n";
+        cout << "Enter choice: ";
+        cin >> choice;
+
+        switch (toupper(choice)) {
+            case 'A': {
+                addRecord(ids, names, grades, count);
+                break;
+            }
+            case 'B': {
+                if (count == 0) {
+                    cout << "No records available.\n";
+                    break;
+                }
+                int searchID;
+                cout << "Enter student ID to search: ";
+                cin >> searchID;
+                int index = linearSearch(ids, count, searchID);
+                if (index != -1) {
+                    cout << "Student found:\n";
+                    displayRecord(ids[index], names[index], grades[index]);
+                } else {
+                    cout << "Student with ID " << searchID << " not found.\n";
+                }
+                break;
+            }
+            case 'C': {
+                if (count == 0) {
+                    cout << "No records available.\n";
+                    break;
+                }
+                sortByID(ids, names, grades, count);
+                int searchID;
+                cout << "Enter student ID to search: ";
+                cin >> searchID;
+                int index = binarySearch(ids, count, searchID);
+                if (index != -1) {
+                    cout << "Student found:\n";
+                    displayRecord(ids[index], names[index], grades[index]);
+                } else {
+                    cout << "Student with ID " << searchID << " not found.\n";
+                }
+                break;
+            }
+            case 'D': {
+                displayAll(ids, names, grades, count);
+                break;
+            }
+            case 'E': {
+                cout << "Exiting program.\n";
+                break;
+            }
+            default: {
+                cout << "Invalid choice.\n";
+            }
+        }
+
+    } while (toupper(choice) != 'E');
+
+    return 0;
+}
